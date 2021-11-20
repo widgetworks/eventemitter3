@@ -256,6 +256,50 @@ describe('EventEmitter', function tests() {
       'watch'
     ]);
   });
+  
+  describe('EventEmitter#emitWithEvent', function () {
+    it('emits event from string', function (done) {
+      var context = { bar: 'baz' }
+        , e = new EventEmitter();
+
+      e.on('foo', function (event) {
+        assume(event).eql({
+          type: 'foo'
+        });
+        assume(this).equals(context);
+
+        done();
+      }, context).emitWithEvent('foo');
+    });
+    
+    it('emits event from Event-like object', function (done) {
+      var eventLike = {
+          type: 'bar',
+          extra: 'data'
+        }
+        , e = new EventEmitter();
+
+      e.on('bar', function (event) {
+        assume(event).equals(eventLike);
+
+        done();
+      }).emitWithEvent(eventLike);
+    });
+
+    it('emits event with Event and arguments', function (done) {
+      var e = new EventEmitter();
+
+      e.on('foo', function (event, bar, a, b, c) {
+        assume(event).eql({type: 'foo'});
+        assume(bar).equals('bar');
+        assume(a).equals(1);
+        assume(b).equals(2);
+        assume(c).equals(3);
+
+        done();
+      }).emitWithEvent('foo', 'bar', 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
+    });
+  });
 
   describe('EventEmitter#listeners', function () {
     it('returns an empty array if no listeners are specified', function () {

@@ -216,6 +216,84 @@ EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
 };
 
 /**
+ * Calls each of the listeners registered for a given event, passing some `Event`-like
+ * object as the first parameter to the listener.
+ *
+ * Widget Works extension to make this work like jquery `.trigger('eventName', arg1, arg2, ...)`
+ *
+ * @param {(EventLike|String|Symbol)} event The event name.
+ * @returns {Boolean} `true` if the event had listeners, else `false`.
+ * @public
+ */
+EventEmitter.prototype.emitWithEvent = function emit(event, a1, a2, a3, a4, a5) {
+  
+  // `Event`-like object
+  var eventObj;
+  if (event && typeof event === 'object'){
+    // event object
+    eventObj = event;
+    event = event.type;
+  } else {
+    // string | symbol
+    eventObj = {
+      type: event
+    };
+  }
+  
+  var evt = prefix ? prefix + event : event;
+
+  if (!this._events[evt]) return false;
+
+  var listeners = this._events[evt]
+    , len = arguments.length
+    , args
+    , i;
+  
+  if (listeners.fn) {
+    if (listeners.once) this.removeListener(event, listeners.fn, undefined, true);
+
+    switch (len) {
+      case 1: return listeners.fn.call(listeners.context, eventObj), true;
+      case 2: return listeners.fn.call(listeners.context, eventObj, a1), true;
+      case 3: return listeners.fn.call(listeners.context, eventObj, a1, a2), true;
+      case 4: return listeners.fn.call(listeners.context, eventObj, a1, a2, a3), true;
+      case 5: return listeners.fn.call(listeners.context, eventObj, a1, a2, a3, a4), true;
+      case 6: return listeners.fn.call(listeners.context, eventObj, a1, a2, a3, a4, a5), true;
+    }
+
+    for (i = 1, args = new Array(len -1); i < len; i++) {
+      args[i - 1] = arguments[i];
+    }
+    args.unshift(eventObj);
+
+    listeners.fn.apply(listeners.context, args);
+  } else {
+    var length = listeners.length
+      , j;
+
+    for (i = 0; i < length; i++) {
+      if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
+
+      switch (len) {
+        case 1: listeners[i].fn.call(listeners[i].context); break;
+        case 2: listeners[i].fn.call(listeners[i].context, a1); break;
+        case 3: listeners[i].fn.call(listeners[i].context, a1, a2); break;
+        case 4: listeners[i].fn.call(listeners[i].context, a1, a2, a3); break;
+        default:
+          if (!args) for (j = 1, args = new Array(len -1); j < len; j++) {
+            args[j - 1] = arguments[j];
+          }
+          args.unshift(eventObj);
+
+          listeners[i].fn.apply(listeners[i].context, args);
+      }
+    }
+  }
+
+  return true;
+};
+
+/**
  * Add a listener for a given event.
  *
  * @param {(String|Symbol)} event The event name.

@@ -35,6 +35,17 @@ declare class EventEmitter<
   ): boolean;
 
   /**
+   * Calls each of the listeners registered for a given event, passing some `Event`-like
+   * object as the first parameter to the listener.
+   *
+   * Widget Works extension to make this work like jquery `.trigger('eventName', arg1, arg2, ...)`
+   */
+  emitWithEvent<T extends EventEmitter.EventNames<EventTypes | object>>(
+    event: T,
+    ...args: EventEmitter.EventArgs<EventTypes, T>
+  ): boolean;
+
+  /**
    * Add a listener for a given event.
    */
   on<T extends EventEmitter.EventNames<EventTypes>>(
@@ -101,6 +112,15 @@ declare namespace EventEmitter {
    * ```
    */
   export type ValidEventTypes = string | symbol | object;
+  
+  /**
+   * An object that looks like a browser Event instance.
+   *
+   * (Widget Works extension)
+   */
+  export type EventLike = {
+    type: string;
+  };
 
   export type EventNames<T extends ValidEventTypes> = T extends string | symbol
     ? T
