@@ -299,6 +299,45 @@ describe('EventEmitter', function tests() {
         done();
       }).emitWithEvent('foo', 'bar', 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
     });
+
+    it('invokes every event listener', function (done) {
+      var e = new EventEmitter();
+      
+      // check call count
+      let callCount = 0;
+      e.on('foo', function (event, bar, a, b, c) {
+        assume(event).eql({type: 'foo'});
+        assume(bar).equals('bar');
+        assume(a).equals(1);
+        assume(b).equals(2);
+        assume(c).equals(3);
+        
+        callCount++;
+      })
+      .on('foo', function (event, bar, a, b, c) {
+        assume(event).eql({type: 'foo'});
+        assume(bar).equals('bar');
+        assume(a).equals(1);
+        assume(b).equals(2);
+        assume(c).equals(3);
+        
+        callCount++;
+      })
+      .on('foo', function (event, bar, a, b, c) {
+        assume(event).eql({type: 'foo'});
+        assume(bar).equals('bar');
+        assume(a).equals(1);
+        assume(b).equals(2);
+        assume(c).equals(3);
+        
+        callCount++;
+        assume(c).equals(3);
+        
+        done();
+      })
+      .emitWithEvent('foo', 'bar', 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
+    });
+    
   });
 
   describe('EventEmitter#listeners', function () {

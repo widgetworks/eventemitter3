@@ -221,6 +221,10 @@ EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
  *
  * Widget Works extension to make this work like jquery `.trigger('eventName', arg1, arg2, ...)`
  *
+ * .on((eventObj, arg1, arg2) => {
+ *     eventObj.type;
+ * });
+ *
  * @param {(EventLike|String|Symbol)} event The event name.
  * @returns {Boolean} `true` if the event had listeners, else `false`.
  * @public
@@ -260,11 +264,11 @@ EventEmitter.prototype.emitWithEvent = function emit(event, a1, a2, a3, a4, a5) 
       case 5: return listeners.fn.call(listeners.context, eventObj, a1, a2, a3, a4), true;
       case 6: return listeners.fn.call(listeners.context, eventObj, a1, a2, a3, a4, a5), true;
     }
-
-    for (i = 1, args = new Array(len -1); i < len; i++) {
-      args[i - 1] = arguments[i];
+    
+    args = [eventObj];
+    for (i = 1; i < len; i++) {
+      args.push(arguments[i]);
     }
-    args.unshift(eventObj);
 
     listeners.fn.apply(listeners.context, args);
   } else {
@@ -275,15 +279,17 @@ EventEmitter.prototype.emitWithEvent = function emit(event, a1, a2, a3, a4, a5) 
       if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
 
       switch (len) {
-        case 1: listeners[i].fn.call(listeners[i].context); break;
-        case 2: listeners[i].fn.call(listeners[i].context, a1); break;
-        case 3: listeners[i].fn.call(listeners[i].context, a1, a2); break;
-        case 4: listeners[i].fn.call(listeners[i].context, a1, a2, a3); break;
+        case 1: listeners[i].fn.call(listeners[i].context, eventObj); break;
+        case 2: listeners[i].fn.call(listeners[i].context, eventObj, a1); break;
+        case 3: listeners[i].fn.call(listeners[i].context, eventObj, a1, a2); break;
+        case 4: listeners[i].fn.call(listeners[i].context, eventObj, a1, a2, a3); break;
         default:
-          if (!args) for (j = 1, args = new Array(len -1); j < len; j++) {
-            args[j - 1] = arguments[j];
+          if (!args) {
+            args = [eventObj];
+            for (j = 1; j < len; j++) {
+              args.push(arguments[j]);
+            }
           }
-          args.unshift(eventObj);
 
           listeners[i].fn.apply(listeners[i].context, args);
       }
