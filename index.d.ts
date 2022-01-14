@@ -40,8 +40,8 @@ declare class EventEmitter<
    *
    * Widget Works extension to make this work like jquery `.trigger('eventName', arg1, arg2, ...)`
    */
-  emitWithEvent<T extends EventEmitter.EventNames<EventTypes | object>>(
-    event: T,
+  emitWithEvent<T extends EventEmitter.EventNames<EventTypes>>(
+    event: T | EventEmitter.EventLike,
     ...args: EventEmitter.EventArgs<EventTypes, T>
   ): boolean;
 
