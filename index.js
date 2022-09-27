@@ -218,7 +218,8 @@ EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
 /**
  * Calls each of the listeners registered for a given event, passing some `Event`-like
  * object as the first parameter to the listener.
- *
+ * 
+ * @wiwo
  * Widget Works extension to make this work like jquery `.trigger('eventName', arg1, arg2, ...)`
  *
  * .on((eventObj, arg1, arg2) => {
@@ -229,7 +230,7 @@ EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
  * @returns {Boolean} `true` if the event had listeners, else `false`.
  * @public
  */
-EventEmitter.prototype.emitWithEvent = function emit(event, a1, a2, a3, a4, a5) {
+EventEmitter.prototype.emitWithEvent = function emitWithEvent(event, a1, a2, a3, a4, a5) {
   
   // `Event`-like object
   var eventObj;
@@ -300,6 +301,13 @@ EventEmitter.prototype.emitWithEvent = function emit(event, a1, a2, a3, a4, a5) 
 };
 
 /**
+ * @wiwo
+ * @jquery
+ * Alias our custom `emitWithEvent()` to jquery `triggerHandler()`.
+ */
+EventEmitter.prototype.triggerHandler = EventEmitter.prototype.emitWithEvent;
+
+/**
  * Add a listener for a given event.
  *
  * @param {(String|Symbol)} event The event name.
@@ -324,6 +332,13 @@ EventEmitter.prototype.on = function on(event, fn, context) {
 EventEmitter.prototype.once = function once(event, fn, context) {
   return addListener(this, event, fn, context, true);
 };
+
+/**
+ * @wiwo
+ * @jquery
+ * Alias `once()` to `one()` to match jquery API
+ */
+EventEmitter.prototype.one = EventEmitter.prototype.once;
 
 /**
  * Remove the listeners of a given event.

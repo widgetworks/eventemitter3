@@ -257,6 +257,9 @@ describe('EventEmitter', function tests() {
     ]);
   });
   
+  /**
+   * @wiwo
+   */
   describe('EventEmitter#emitWithEvent', function () {
     it('emits event from string', function (done) {
       var context = { bar: 'baz' }
@@ -336,6 +339,93 @@ describe('EventEmitter', function tests() {
         done();
       })
       .emitWithEvent('foo', 'bar', 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
+    });
+    
+  });
+  
+  /**
+   * @wiwo
+   * Test that `triggerHandler()` acts the same as `emitWithEvent()`
+   */
+  describe('EventEmitter#triggerHandler', function () {
+    it('emits event from string', function (done) {
+      var context = { bar: 'baz' }
+        , e = new EventEmitter();
+
+      e.on('foo', function (event) {
+        assume(event).eql({
+          type: 'foo'
+        });
+        assume(this).equals(context);
+
+        done();
+      }, context).triggerHandler('foo');
+    });
+    
+    it('emits event from Event-like object', function (done) {
+      var eventLike = {
+          type: 'bar',
+          extra: 'data'
+        }
+        , e = new EventEmitter();
+
+      e.on('bar', function (event) {
+        assume(event).equals(eventLike);
+
+        done();
+      }).triggerHandler(eventLike);
+    });
+
+    it('emits event with Event and arguments', function (done) {
+      var e = new EventEmitter();
+
+      e.on('foo', function (event, bar, a, b, c) {
+        assume(event).eql({type: 'foo'});
+        assume(bar).equals('bar');
+        assume(a).equals(1);
+        assume(b).equals(2);
+        assume(c).equals(3);
+
+        done();
+      }).triggerHandler('foo', 'bar', 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
+    });
+
+    it('invokes every event listener', function (done) {
+      var e = new EventEmitter();
+      
+      // check call count
+      let callCount = 0;
+      e.on('foo', function (event, bar, a, b, c) {
+        assume(event).eql({type: 'foo'});
+        assume(bar).equals('bar');
+        assume(a).equals(1);
+        assume(b).equals(2);
+        assume(c).equals(3);
+        
+        callCount++;
+      })
+      .on('foo', function (event, bar, a, b, c) {
+        assume(event).eql({type: 'foo'});
+        assume(bar).equals('bar');
+        assume(a).equals(1);
+        assume(b).equals(2);
+        assume(c).equals(3);
+        
+        callCount++;
+      })
+      .on('foo', function (event, bar, a, b, c) {
+        assume(event).eql({type: 'foo'});
+        assume(bar).equals('bar');
+        assume(a).equals(1);
+        assume(b).equals(2);
+        assume(c).equals(3);
+        
+        callCount++;
+        assume(c).equals(3);
+        
+        done();
+      })
+      .triggerHandler('foo', 'bar', 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
     });
     
   });
@@ -471,6 +561,86 @@ describe('EventEmitter', function tests() {
         , e = new EventEmitter();
 
       e.once('foo', function (bar) {
+        assume(this).equals(context);
+        assume(bar).equals('bar');
+
+        done();
+      }, context).emit('foo', 'bar');
+    });
+  });
+  
+  /**
+   * @wiwo
+   * Make sure jquery-style `.one()` acts the same as `.once()`
+   */
+  describe('EventEmitter#one', function () {
+    it('only emits it one-time', function () {
+      var e = new EventEmitter()
+        , calls = 0;
+
+      e.one('foo', function () {
+        calls++;
+      });
+
+      e.emit('foo');
+      e.emit('foo');
+      e.emit('foo');
+      e.emit('foo');
+      e.emit('foo');
+
+      assume(e.listeners('foo').length).equals(0);
+      assume(calls).equals(1);
+    });
+
+    it('only emits one-time if emits are nested inside the listener', function () {
+      var e = new EventEmitter()
+        , calls = 0;
+
+      e.one('foo', function () {
+        calls++;
+        e.emit('foo');
+      });
+
+      e.emit('foo');
+      assume(e.listeners('foo').length).equals(0);
+      assume(calls).equals(1);
+    });
+
+    it('only emits one-time for multiple events', function () {
+      var e = new EventEmitter()
+        , multi = 0
+        , foo = 0
+        , bar = 0;
+
+      e.one('foo', function () {
+        foo++;
+      });
+
+      e.one('foo', function () {
+        bar++;
+      });
+
+      e.on('foo', function () {
+        multi++;
+      });
+
+      e.emit('foo');
+      e.emit('foo');
+      e.emit('foo');
+      e.emit('foo');
+      e.emit('foo');
+
+      assume(e.listeners('foo').length).equals(1);
+      assume(multi).equals(5);
+      assume(foo).equals(1);
+      assume(bar).equals(1);
+    });
+
+    it('only emits one-time with context', function (done) {
+      var context = { foo: 'bar' }
+        , e = new EventEmitter();
+
+      e.one('foo', function (bar) {
         assume(this).equals(context);
         assume(bar).equals('bar');
 
