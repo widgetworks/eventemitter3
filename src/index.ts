@@ -1,48 +1,7 @@
-'use strict';
+import Events from './Events';
+import EE from './EE';
 
-var has = Object.prototype.hasOwnProperty
-  , prefix = '~';
-
-/**
- * Constructor to create a storage for our `EE` objects.
- * An `Events` instance is a plain object whose properties are event names.
- *
- * @constructor
- * @private
- */
-function Events() {}
-
-//
-// We try to not inherit from `Object.prototype`. In some engines creating an
-// instance in this way is faster than calling `Object.create(null)` directly.
-// If `Object.create(null)` is not supported we prefix the event names with a
-// character to make sure that the built-in object properties are not
-// overridden or used as an attack vector.
-//
-if (Object.create) {
-  Events.prototype = Object.create(null);
-
-  //
-  // This hack is needed because the `__proto__` property is still inherited in
-  // some old browsers like Android 4, iPhone 5.1, Opera 11 and Safari 5.
-  //
-  if (!new Events().__proto__) prefix = false;
-}
-
-/**
- * Representation of a single event listener.
- *
- * @param {Function} fn The listener function.
- * @param {*} context The context to invoke the listener with.
- * @param {Boolean} [once=false] Specify if the listener is a one-time listener.
- * @constructor
- * @private
- */
-function EE(fn, context, once) {
-  this.fn = fn;
-  this.context = context;
-  this.once = once || false;
-}
+var has = Object.prototype.hasOwnProperty;
 
 /**
  * Add a listener for a given event.
@@ -60,8 +19,8 @@ function addListener(emitter, event, fn, context, once) {
     throw new TypeError('The listener must be a function');
   }
 
-  var listener = new EE(fn, context || emitter, once)
-    , evt = prefix ? prefix + event : event;
+  const listener = new EE(fn, context || emitter, once);
+  const evt = event;
 
   if (!emitter._events[evt]) emitter._events[evt] = listener, emitter._eventsCount++;
   else if (!emitter._events[evt].fn) emitter._events[evt].push(listener);
@@ -109,7 +68,7 @@ EventEmitter.prototype.eventNames = function eventNames() {
   if (this._eventsCount === 0) return names;
 
   for (name in (events = this._events)) {
-    if (has.call(events, name)) names.push(prefix ? name.slice(1) : name);
+    if (has.call(events, name)) names.push(name);
   }
 
   if (Object.getOwnPropertySymbols) {
@@ -127,7 +86,7 @@ EventEmitter.prototype.eventNames = function eventNames() {
  * @public
  */
 EventEmitter.prototype.listeners = function listeners(event) {
-  var evt = prefix ? prefix + event : event
+  var evt = event
     , handlers = this._events[evt];
 
   if (!handlers) return [];
@@ -148,7 +107,7 @@ EventEmitter.prototype.listeners = function listeners(event) {
  * @public
  */
 EventEmitter.prototype.listenerCount = function listenerCount(event) {
-  var evt = prefix ? prefix + event : event
+  var evt = event
     , listeners = this._events[evt];
 
   if (!listeners) return 0;
@@ -164,7 +123,7 @@ EventEmitter.prototype.listenerCount = function listenerCount(event) {
  * @public
  */
 EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
-  var evt = prefix ? prefix + event : event;
+  var evt = event;
 
   if (!this._events[evt]) return false;
 
@@ -245,7 +204,7 @@ EventEmitter.prototype.emitWithEvent = function emitWithEvent(event, a1, a2, a3,
     };
   }
   
-  var evt = prefix ? prefix + event : event;
+  var evt = event;
 
   if (!this._events[evt]) return false;
 
@@ -351,7 +310,7 @@ EventEmitter.prototype.one = EventEmitter.prototype.once;
  * @public
  */
 EventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
-  var evt = prefix ? prefix + event : event;
+  var evt = event;
 
   if (!this._events[evt]) return this;
   if (!fn) {
@@ -401,7 +360,7 @@ EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
   var evt;
 
   if (event) {
-    evt = prefix ? prefix + event : event;
+    evt = event;
     if (this._events[evt]) clearEvent(this, evt);
   } else {
     this._events = new Events();
@@ -416,11 +375,6 @@ EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
 //
 EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
 EventEmitter.prototype.addListener = EventEmitter.prototype.on;
-
-//
-// Expose the prefix.
-//
-EventEmitter.prefixed = prefix;
 
 //
 // Allow `EventEmitter` to be imported as module namespace.
