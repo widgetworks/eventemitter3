@@ -805,18 +805,8 @@ describe('EventEmitter', function tests() {
 
     it('returns an array listing the events that have listeners', function () {
       const e = new EventEmitter();
-      let original: any;
 
       function bar() {}
-
-      // if (Object.getOwnPropertySymbols) {
-      //   //
-      //   // Monkey patch `Object.getOwnPropertySymbols()` to increase coverage
-      //   // on Node.js > 0.10.
-      //   //
-      //   original = Object.getOwnPropertySymbols;
-      //   Object.getOwnPropertySymbols = undefined;
-      // }
 
       e.on('foo', function () {});
       e.on('bar', bar);
@@ -827,8 +817,6 @@ describe('EventEmitter', function tests() {
         assume(e.eventNames()).eql(['foo']);
       } catch (ex) {
         throw ex;
-      } finally {
-        if (original) Object.getOwnPropertySymbols = original;
       }
     });
 

@@ -36,10 +36,10 @@ export class EventEmitter<
     if (this._eventsCount === 0) return [];
   
     const events = this._events;
-    const names: Array<EventNames<EventTypes>> = Object.keys(events) as any;
+    let names: Array<EventNames<EventTypes>> = Object.keys(events) as any;
     
     if (Object.getOwnPropertySymbols) {
-      return names.concat(Object.getOwnPropertySymbols(events) as any);
+      names = names.concat(Object.getOwnPropertySymbols(events) as any);
     }
   
     return names;
