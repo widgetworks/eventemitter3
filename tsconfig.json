@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "ESNext",
+        "target": "ESNext",
+        "moduleResolution": "Node",
+        "strict": true,
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+        "esModuleInterop": true
+    },
+    "files": [
+        "src/index.ts"
+    ]
+}

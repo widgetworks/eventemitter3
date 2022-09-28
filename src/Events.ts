@@ -1,11 +1,7 @@
-/**
- * Constructor to create a storage for our `EE` objects.
- * An `Events` instance is a plain object whose properties are event names.
- *
- * @constructor
- * @private
- */
-function Events() {}
+import { EE } from "./EE";
+import { ValidEventNames } from "./types";
+
+export type IEventsMap<EventTypes extends ValidEventNames = ValidEventNames> = Record<ValidEventNames, EE | EE[]>;
 
 //
 // We try to not inherit from `Object.prototype`. In some engines creating an
@@ -14,8 +10,13 @@ function Events() {}
 // character to make sure that the built-in object properties are not
 // overridden or used as an attack vector.
 //
-if (Object.create) {
-  Events.prototype = Object.create(null);
-}
 
-export default Events;
+/**
+ * Create storage for our `EE` objects.
+ * An `Events` instance is a plain object whose properties are event names.
+ * 
+ * @private
+ */
+export function getEventsMap<EventTypes extends ValidEventNames = ValidEventNames>(): IEventsMap<EventTypes> {
+  return Object.create(null);
+}

@@ -2,21 +2,32 @@
   "name": "@wiwo/eventemitter3",
   "version": "5.0.0",
   "description": "EventEmitter3 focuses on performance while maintaining a Node.js AND browser compatible interface.",
-  "main": "index.js",
-  "typings": "index.d.ts",
+  "sideEffects": false,
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "typings": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
-    "build": "npm run browserify && npm run minify",
-    "browserify": "rm -rf umd && mkdir umd && browserify index.js -s EventEmitter3 -o umd/eventemitter3.js",
-    "minify": "uglifyjs umd/eventemitter3.js --source-map -cm -o umd/eventemitter3.min.js",
-    "benchmark": "find benchmarks/run -name '*.js' -exec benchmarks/start.sh {} \\;",
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
     "test": "jest --env=node",
-    "prepublishOnly": "npm run browserify && npm run minify",
     "test-browser": "jest --env=jsdom"
   },
+  "disabledScripts": {
+    "prepublishOnly": "npm run browserify && npm run minify",
+    "browserify": "rm -rf umd && mkdir umd && browserify index.js -s EventEmitter3 -o umd/eventemitter3.js",
+    "minify": "uglifyjs umd/eventemitter3.js --source-map -cm -o umd/eventemitter3.min.js",
+    "benchmark": "find benchmarks/run -name '*.js' -exec benchmarks/start.sh {} \\;"
+  },
   "files": [
-    "index.js",
-    "index.d.ts",
-    "umd"
+    "dist/index.js",
+    "dist/index.mjs",
+    "dist/index.d.ts"
   ],
   "repository": {
     "type": "git",
@@ -51,6 +62,8 @@
     "jest": "^29.0.3",
     "jest-environment-jsdom": "^29.0.3",
     "pre-commit": "^1.2.0",
+    "ts-jest": "^29.0.2",
+    "tsup": "^6.2.3",
     "uglify-js": "^3.9.0"
   }
 }

@@ -1,4 +1,4 @@
-class EE {
+export class EE {
     
     /**
      * Representation of a single event listener.
@@ -16,5 +16,3 @@ class EE {
     ){}
     
 }
-
-export default EE;
