@@ -229,13 +229,17 @@ export class EventEmitter<
    * @public
    */
   removeListener<T extends EventNames<EventTypes>>(
-      event: T,
+      event?: T,
       fn?: EventListener<EventTypes, T> | Function,
       context?: Context,
       once?: boolean
   ): this {
     
     const evt = event;
+    
+    if (typeof evt === 'undefined'){
+      return this.removeAllListeners();
+    }
   
     if (!this._events[evt]) return this;
     if (!fn) {
