@@ -62,7 +62,9 @@ export class EventEmitter<
     if (!handlers) return [];
     if ('fn' in handlers) return [handlers.fn as any];
   
-    for (var i = 0, l = handlers.length, ee = new Array(l); i < l; i++) {
+    const l = handlers.length;
+    const ee = new Array(l);
+    for (let i = 0; i < l; i++) {
       ee[i] = handlers[i].fn;
     }
   
@@ -137,11 +139,13 @@ export class EventEmitter<
    * });
    *
    * @param {(EventLike|String|Symbol)} event The event name.
+   * @param {...*} args Any extra arguments to pass to the listeners.
    * @returns {Boolean} `true` if the event had listeners, else `false`.
    * @public
    */
   emitWithEvent<T extends EventNames<EventTypes>>(
-      event: T | EventLike<T>, a1?: any, a2?: any, a3?: any, a4?: any, a5?: any, ...args2: any[]
+      event: T | EventLike<T>,
+      ...args: EventArgs<EventTypes, T>
   ): boolean {
     
     // `Event`-like object
@@ -161,51 +165,19 @@ export class EventEmitter<
     
     if (!this._events[evt]) return false;
   
-    var listeners = this._events[evt]
-      , len = arguments.length
-      , args
-      , i;
+    const listeners = this._events[evt];
+    const argsWithEvent = [eventObj, ...args];
     
     if ('fn' in listeners) {
       if (listeners.once) this.removeListener(evt, listeners.fn, undefined, true);
-  
-      switch (len) {
-        case 1: return listeners.fn.call(listeners.context, eventObj), true;
-        case 2: return listeners.fn.call(listeners.context, eventObj, a1), true;
-        case 3: return listeners.fn.call(listeners.context, eventObj, a1, a2), true;
-        case 4: return listeners.fn.call(listeners.context, eventObj, a1, a2, a3), true;
-        case 5: return listeners.fn.call(listeners.context, eventObj, a1, a2, a3, a4), true;
-        case 6: return listeners.fn.call(listeners.context, eventObj, a1, a2, a3, a4, a5), true;
-      }
       
-      args = [eventObj];
-      for (i = 1; i < len; i++) {
-        args.push(arguments[i]);
-      }
-  
-      listeners.fn.apply(listeners.context, args);
+      listeners.fn.apply(listeners.context, argsWithEvent);
     } else {
-      var length = listeners.length
-        , j;
-  
-      for (i = 0; i < length; i++) {
+      const length = listeners.length;
+      for (let i = 0; i < length; i++) {
         if (listeners[i].once) this.removeListener(evt, listeners[i].fn, undefined, true);
-  
-        switch (len) {
-          case 1: listeners[i].fn.call(listeners[i].context, eventObj); break;
-          case 2: listeners[i].fn.call(listeners[i].context, eventObj, a1); break;
-          case 3: listeners[i].fn.call(listeners[i].context, eventObj, a1, a2); break;
-          case 4: listeners[i].fn.call(listeners[i].context, eventObj, a1, a2, a3); break;
-          default:
-            if (!args) {
-              args = [eventObj];
-              for (j = 1; j < len; j++) {
-                args.push(arguments[j]);
-              }
-            }
-  
-            listeners[i].fn.apply(listeners[i].context, args);
-        }
+        
+        listeners[i].fn.apply(listeners[i].context, argsWithEvent);
       }
     }
   
@@ -263,7 +235,7 @@ export class EventEmitter<
       once?: boolean
   ): this {
     
-    var evt = event;
+    const evt = event;
   
     if (!this._events[evt]) return this;
     if (!fn) {
@@ -271,8 +243,7 @@ export class EventEmitter<
       return this;
     }
   
-    var listeners = this._events[evt];
-  
+    const listeners = this._events[evt];
     if ('fn' in listeners) {
       if (
         listeners.fn === fn &&
@@ -282,7 +253,9 @@ export class EventEmitter<
         clearEvent(this, evt);
       }
     } else {
-      for (var i = 0, events = [], length = listeners.length; i < length; i++) {
+      const events = []
+      const length = listeners.length;
+      for (let i = 0; i < length; i++) {
         if (
           listeners[i].fn !== fn ||
           (once && !listeners[i].once) ||
@@ -310,10 +283,8 @@ export class EventEmitter<
    * @public
    */
   removeAllListeners(event?: EventNames<EventTypes>) {
-    var evt: ValidEventNames;
-  
     if (event) {
-      evt = event;
+      const evt = event;
       if (this._events[evt]) clearEvent(this, evt);
     } else {
       this._events = getEventsMap();
