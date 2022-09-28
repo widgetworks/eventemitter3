@@ -3,6 +3,7 @@
         "module": "ESNext",
         "target": "ESNext",
         "moduleResolution": "Node",
+        "sourceMap": true,
         "strict": true,
         "noUnusedLocals": false,
         "noUnusedParameters": false,
