@@ -1,13 +1,20 @@
 {
     "compilerOptions": {
         "module": "ESNext",
-        "target": "ESNext",
+        "target": "ES5",
         "moduleResolution": "Node",
+        "lib": [
+            "ES2015"
+        ],
+        "isolatedModules": true,
         "sourceMap": true,
+        "declaration": true,
+        "declarationDir": "dist/types",
         "strict": true,
         "noUnusedLocals": false,
         "noUnusedParameters": false,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "types": []
     },
     "files": [
         "src/index.ts"
