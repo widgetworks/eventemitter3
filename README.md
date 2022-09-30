@@ -29,23 +29,52 @@ support.
 ## Installation
 
 ```bash
-$ npm install --save eventemitter3
-```
-
-## CDN
-
-Recommended CDN:
-
-```text
-https://unpkg.com/eventemitter3@latest/umd/eventemitter3.min.js
+$ npm install --save @wiwo/eventemitter3
 ```
 
 ## Usage
 
-After installation the only thing you need to do is require the module:
+```ts
+import {EventEmitter} from '@wiwo/eventemitter3';
+import type {EventType} from '@wiwo/eventemitter3';
 
-```js
-var EventEmitter = require('eventemitter3');
+const ee = new EventEmitter();
+
+ee.on('click', (x: number, y: string) => {
+    
+});
+
+// Node EventEmitter style; there is no event parameter
+ee.emit('click', 1, 'string');
+```
+
+```ts
+import {EventEmitter} from '@wiwo/eventemitter3';
+import type {EventType} from '@wiwo/eventemitter3';
+
+interface IEventMap {
+    click: [EventType<'click'>, number, string],
+    change: (event: EventType<'change'>, x: number, y: string) => void,
+}
+
+const ee = new EventEmitter<IEventMap>();
+
+ee.on('click', (event: EventType, x: number, y: string) => {
+    event.type === 'click';
+});
+
+ee.on('change', (event: EventType, x: number, y: string) => {
+    event.type === 'change';
+});
+
+ee.emit('click', {type: 'click'}, 1, 'string');
+
+// browser EventTarger - similar to dispatchEvent(event)
+// event object is passed as first parameter to event listener function.
+ee.emitWithEvent('click', 1, 'string');
+ee.triggerHandler('change', 1, 'string');
+
+// TODO: Need to add `dispatchEvent()` function
 ```
 
 And you're ready to create your own EventEmitter instances. For the API
