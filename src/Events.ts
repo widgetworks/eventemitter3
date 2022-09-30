@@ -1,7 +1,7 @@
 import { EE } from "./EE";
-import { ValidEventNames } from "./types";
+import {EventNames, ValidEventNames, ValidEventTypes } from "./types";
 
-export type IEventsMap<EventTypes extends ValidEventNames = ValidEventNames> = Record<ValidEventNames, EE | EE[]>;
+export type IEventsMap<EventTypes extends ValidEventTypes = ValidEventTypes> = Record< EventNames<EventTypes> , EE | EE[]>;
 
 //
 // We try to not inherit from `Object.prototype`. In some engines creating an
@@ -17,6 +17,6 @@ export type IEventsMap<EventTypes extends ValidEventNames = ValidEventNames> = R
  * 
  * @private
  */
-export function getEventsMap<EventTypes extends ValidEventNames = ValidEventNames>(): IEventsMap<EventTypes> {
+export function getEventsMap<EventTypes extends ValidEventTypes = ValidEventTypes>(): IEventsMap<EventTypes> {
   return Object.create(null);
 }

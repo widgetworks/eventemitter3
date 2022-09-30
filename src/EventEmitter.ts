@@ -1,6 +1,6 @@
 import { getEventsMap } from './Events';
 import { EE } from './EE';
-import { EventNames, EventListener, ValidEventNames, EventLike, EventArgs } from './types';
+import { EventNames, EventListener, ValidEventNames, ValidEventTypes, EventLike, EventArgs, EventArgsWithoutEventObject } from './types';
 
 /**
  * Minimal `EventEmitter` interface that is molded against the Node.js
@@ -18,7 +18,7 @@ import { EventNames, EventListener, ValidEventNames, EventLike, EventArgs } from
  * @public
  */
 export class EventEmitter<
-  EventTypes extends ValidEventNames = ValidEventNames,
+  EventTypes extends ValidEventTypes = ValidEventTypes,
   Context extends any = any
 > {
   
@@ -145,7 +145,7 @@ export class EventEmitter<
    */
   emitWithEvent<T extends EventNames<EventTypes>>(
       event: T | EventLike<T>,
-      ...args: EventArgs<EventTypes, T>
+      ...args: EventArgsWithoutEventObject<EventTypes, T>
   ): boolean {
     
     // `Event`-like object
