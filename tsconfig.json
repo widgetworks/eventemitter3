@@ -11,10 +11,13 @@
         "declaration": true,
         "declarationDir": "dist/types",
         "strict": true,
+        "noImplicitAny": false,
         "noUnusedLocals": false,
         "noUnusedParameters": false,
         "esModuleInterop": true,
-        "types": []
+        "types": [
+            "jest"
+        ]
     },
     "files": [
         "src/index.ts"

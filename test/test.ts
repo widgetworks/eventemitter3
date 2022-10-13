@@ -77,7 +77,7 @@ describe('EventEmitter', function tests() {
 
       for (var i = 0; i < 100; i++) {
         (function (j) {
-          for (var i = 0, args = []; i < j; i++) {
+          for (var i = 0, args: any[] = []; i < j; i++) {
             args.push(j);
           }
 
@@ -95,7 +95,7 @@ describe('EventEmitter', function tests() {
 
       for (var i = 0; i < 100; i++) {
         (function (j) {
-          for (var i = 0, args = []; i < j; i++) {
+          for (var i = 0, args: any[] = []; i < j; i++) {
             args.push(j);
           }
 

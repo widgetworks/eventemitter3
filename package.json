@@ -19,7 +19,8 @@
     "build-cjs": "tsc -p tsconfig.json --module commonjs --outDir dist/cjs",
     "build-esm": "tsc -p tsconfig.json --module esnext --outDir dist/esm",
     "clean": "rimraf dist",
-    "test": "jest --env=node",
+    "test": "npm run test-node && npm run test-browser",
+    "test-node": "jest --env=node",
     "test-browser": "jest --env=jsdom"
   },
   "disabledScripts": {
@@ -57,6 +58,7 @@
     "url": "https://github.com/widgetworks/eventemitter3/issues"
   },
   "devDependencies": {
+    "@types/jest": "^29.1.2",
     "assume": "^2.2.0",
     "babel-jest": "^29.0.3",
     "jest": "^29.0.3",

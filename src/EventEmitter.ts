@@ -257,7 +257,7 @@ export class EventEmitter<
         clearEvent(this, evt);
       }
     } else {
-      const events = []
+      const events: EE[] = []
       const length = listeners.length;
       for (let i = 0; i < length; i++) {
         if (
