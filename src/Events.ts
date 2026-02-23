@@ -1,5 +1,5 @@
-import { EE } from "./EE";
-import {EventNames, ValidEventNames, ValidEventTypes } from "./types";
+import type { EE } from "./EE";
+import type {EventNames, ValidEventNames, ValidEventTypes } from "./types";
 
 export type IEventsMap<EventTypes extends ValidEventTypes = ValidEventTypes> = Record< EventNames<EventTypes> , EE | EE[]>;
 
